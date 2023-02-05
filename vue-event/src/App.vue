@@ -1,7 +1,5 @@
 <template>
-    <div>
-      <el-button>12414</el-button>
-    </div>
+    <router-view></router-view>
 </template>
 
 <script>
