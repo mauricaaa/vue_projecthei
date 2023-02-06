@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import store from '@/store' // 引入store对象
+// import store from '@/store' // 引入store对象
 
 export const registerAPI = (obj) => {
     return request({
@@ -35,21 +35,21 @@ export const loginAPI = ({ username, password }) => {
 
 export const getUserInfoAPI = () => {
     return request({
-        url: '/my/userinfo',
+        url: '/my/userinfo'
         // method不写就是默认get方式
         // 请求头
-        headers: {
-            // 此处应该请求的是token，但token保存在vuex中，而此处是js文件，不是组件对象，不能用this.$store.state.token
-            Authorization: store.state.token
-        }
+        // headers: {
+        //     // 此处应该请求的是token，但token保存在vuex中，而此处是js文件，不是组件对象，不能用this.$store.state.token
+        //     Authorization: store.state.token
+        // }
     })
 }
 
 export const getMenusListAPI = () => {
     return request({
-        url: 'my/menus',
-        headers: {
-            Authorization: store.state.token
-        }
+        url: 'my/menus'
+        // headers: {
+        //     Authorization: store.state.token
+        // }
     })
 }
