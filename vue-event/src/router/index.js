@@ -23,13 +23,26 @@ const router = new VueRouter({
   routes
 })
 
+let whiteList = ['/login', '/reg'] // 白名单，无需登录即可访问
+// 浏览器第一次打开会触发一次全局守卫
 router.beforeEach((to, from, next) => {
   const token = store.state.token
-  if (token && !store.state.userInfo.username) {
-    store.dispatch('getUserInfoActions')
+  if (token) {
+    // 已经登录
+      if (!store.state.userInfo.username) {
+        store.dispatch('getUserInfoActions')
+      }
+      next()
+  } else {
+    // 未登录
+    // 强制跳转登陆页面
+    // 数组.includes 判断值是否在数组出现过
+    if (whiteList.includes(to.path)) {
+      next()
+    } else {
+      next('/login')
+    }
   }
-
-  next()
 })
 
 export default router
