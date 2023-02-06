@@ -68,6 +68,8 @@
                         this.$message.success(res.message)
                         // 调用mutation,提交到vuex中
                         this.updateToken(res.token)
+                        // 跳转到布局页
+                        this.$router.push('/')
                     } else {
                         this.$message.error(res.message)
                     }
