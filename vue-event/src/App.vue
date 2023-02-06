@@ -5,9 +5,6 @@
 <script>
 // import { getUserInfoAPI } from '@/api'
 export default {
-  created () {
-    this.$store.dispatch('getUserInfoActions')
-  }
 }
 </script>
 

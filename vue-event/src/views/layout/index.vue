@@ -35,7 +35,41 @@
         </el-header>
         <el-container>
         <!-- 左侧边栏的用户信息 -->
-        <el-aside width="200px"></el-aside>
+        <el-aside width="200px">
+            <div class="user-box">
+                <img :src="user_pic" alt="" v-if="user_pic" />
+                <img src="../../assets/images/logo.png" alt="" v-else />
+                <span>欢迎 {{ nickname || username }}</span>
+            </div>
+            <!-- 侧边导航菜单 -->
+            <el-menu
+                router
+                unique-opened
+                default-active="/home"
+                class="el-menu-vertical-demo"
+                @open="handleOpen"
+                @close="handleClose"
+                background-color="#23262E"
+                text-color="#fff"
+                active-text-color="#409EFF">
+                <template v-for="item in menus">
+                    <el-menu-item v-if="!item.children" :index="item.indexPath" :key="item.indexPath">
+                        <i :class="item.icon"></i>
+                        <span>{{item.title}}</span>
+                    </el-menu-item>
+                    <el-submenu v-else :index="item.indexPath" :key="item.indexPath">
+                        <template slot="title">
+                        <i :class="item.icon"></i>
+                        <span>{{item.title}}</span>
+                        </template>
+                        <el-menu-item v-for="obj, index in item.children" :index="obj.indexPath" :key="index">
+                            <i :class="obj.icon"></i>
+                            <span>{{obj.title}}</span>
+                        </el-menu-item>
+                    </el-submenu>
+                </template>
+            </el-menu>
+        </el-aside>
         <el-container>
             <!-- 页面主体区域 -->
             <!-- 二级路由挂载点 -->
@@ -50,8 +84,18 @@
     </template>
 
     <script>
+    import { mapGetters } from 'vuex'
+    import { getMenusListAPI } from '@/api'
     export default {
     name: 'my-layout',
+    data () {
+        return {
+            menus: []
+        }
+    },
+    computed: {
+        ...mapGetters(['username', 'nickname', 'user_pic'])
+    },
     methods: {
         quitFn () {
             this.$confirm('确定要退出吗?', '提示', {
@@ -61,11 +105,27 @@
             }).then(() => {
                 // 选择确定,清除vuex中的token,跳转登陆页面
                 this.$store.commit('updateToken', '')
+                this.$store.commit('updateUserInfo', {})
                 this.$router.push('/login')
             }).catch(() => {
 
             })
+        },
+        handleOpen (key, keyPath) {
+            console.log(key, keyPath)
+        },
+        handleClose (key, keyPath) {
+            console.log(key, keyPath)
+        },
+        async getMenuListFn () {
+            const res = await getMenusListAPI()
+            console.log(res)
+            this.menus = res.data.data
         }
+    },
+    created () {
+        // 请求侧边栏数据
+        this.getMenuListFn()
     }
     }
     </script>

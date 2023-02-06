@@ -44,3 +44,12 @@ export const getUserInfoAPI = () => {
         }
     })
 }
+
+export const getMenusListAPI = () => {
+    return request({
+        url: 'my/menus',
+        headers: {
+            Authorization: store.state.token
+        }
+    })
+}
