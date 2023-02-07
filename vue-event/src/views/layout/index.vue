@@ -45,7 +45,7 @@
             <el-menu
                 router
                 unique-opened
-                default-active="/home"
+                :default-active="$route.path"
                 class="el-menu-vertical-demo"
                 @open="handleOpen"
                 @close="handleClose"
@@ -74,7 +74,7 @@
             <!-- 页面主体区域 -->
             <!-- 二级路由挂载点 -->
             <el-main>
-                    后台主页
+                <router-view></router-view>
             </el-main>
             <!-- 底部 footer 区域 -->
             <el-footer>© www.itheima.com - 黑马程序员</el-footer>

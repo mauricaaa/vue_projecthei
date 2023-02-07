@@ -47,9 +47,45 @@ export const getUserInfoAPI = () => {
 
 export const getMenusListAPI = () => {
     return request({
-        url: 'my/menus'
+        url: '/my/menus'
         // headers: {
         //     Authorization: store.state.token
         // }
+    })
+}
+
+export const updateUserInfoAPI = ({ id, username, nickname, email, user_pic }) => {
+    return request({
+        url: '/my/userinfo',
+        method: 'PUT',
+        data: {
+            id,
+            username,
+            nickname,
+            email,
+            user_pic
+        }
+    })
+}
+
+export const updateUserAvatarAPI = (avatar) => {
+    return request({
+        url: '/my/update/avatar',
+        method: 'PATCH',
+        data: {
+            avatar // 头像base64字符串
+        }
+    })
+}
+
+export const updatePwdAPI = ({ old_pwd, new_pwd, re_pwd }) => {
+    return request({
+        url: '/my/updatepwd',
+        method: 'PATCH',
+        data: {
+            old_pwd,
+            new_pwd,
+            re_pwd
+        }
     })
 }
