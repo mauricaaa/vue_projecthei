@@ -89,3 +89,41 @@ export const updatePwdAPI = ({ old_pwd, new_pwd, re_pwd }) => {
         }
     })
 }
+export const getArtCateListAPI = () => {
+    return request({
+        url: '/my/cate/list'
+    })
+}
+
+export const saveArtCateAPI = ({ cate_name, cate_alias }) => {
+    return request({
+        url: '/my/cate/add',
+        method: 'POST',
+        data: {
+            cate_name,
+            cate_alias
+        }
+    })
+}
+
+export const updateArtCateAPI = ({ id, cate_name, cate_alias }) => {
+    return request({
+        url: '/my/cate/info',
+        method: 'PUT',
+        data: {
+            id,
+            cate_name,
+            cate_alias
+        }
+    })
+}
+
+export const delArtCateAPI = (id) => {
+    return request({
+        url: '/my/cate/del',
+        method: 'delete',
+        params: {
+            id
+        }
+    })
+}
