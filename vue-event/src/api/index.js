@@ -127,3 +127,11 @@ export const delArtCateAPI = (id) => {
         }
     })
 }
+
+export const uploadArticleAPI = (fd) => {
+    return request({
+        url: '/my/article/add',
+        method: 'POST',
+        data: fd
+    })
+}

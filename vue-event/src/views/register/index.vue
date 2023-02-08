@@ -88,7 +88,7 @@ export default {
                     this.$message.success(res.message)
                     // 跳转到登录页面
                     this.$router.push('/login')
-                    registerAPI(this.form)
+                    // registerAPI(this.form)
                 } else {
                     return false // 阻止默认提交行为
                 }
