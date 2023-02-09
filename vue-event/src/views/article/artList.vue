@@ -273,6 +273,11 @@ export default {
             const { data: res } = await delArticleAPI(artId)
             if (res.code !== 0) return this.$message.error('删除失败!')
             this.$message.success('删除成功!')
+            if (this.artList.length === 1) {
+                if (this.q.pagenum > 1) {
+                    this.q.pagenum--
+                }
+            }
             // 刷新列表数据
             this.getArticleListFn()
         }
