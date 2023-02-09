@@ -11,6 +11,11 @@ import VueQuillEditor from 'vue-quill-editor'
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
+
+import dayjs from 'dayjs'
+Vue.prototype.$formatDate = (dateObj) => {
+  return dayjs(dateObj).format('YYYY-MM-DD HH:mm:ss')
+}
 // 全局注册富文本编辑器
 Vue.use(VueQuillEditor) // 此方法会用Vue.component注册全局组件
 

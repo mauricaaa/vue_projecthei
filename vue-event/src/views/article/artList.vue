@@ -10,7 +10,7 @@
         <el-form :inline="true" :model="q">
             <el-form-item label="文章分类">
             <el-select v-model="q.cate_id" placeholder="请选择分类" size="small">
-                <el-option v-for="obj in cateList " :key="obj.id" :label="obj.cate_name" :value="obj.cate_id"></el-option>
+                <el-option v-for="obj in cateList " :key="obj.id" :label="obj.cate_name" :value="obj.id"></el-option>
             </el-select>
             </el-form-item>
             <el-form-item label="发布状态" style="margin-left: 15px;">
@@ -20,8 +20,8 @@
             </el-select>
             </el-form-item>
             <el-form-item>
-            <el-button type="primary" size="small">筛选</el-button>
-            <el-button type="info" size="small">重置</el-button>
+            <el-button type="primary" size="small" @click="choseFn">筛选</el-button>
+            <el-button type="info" size="small" @click="resetFn">重置</el-button>
             </el-form-item>
         </el-form>
         <!-- 发表文章的按钮 -->
@@ -29,7 +29,38 @@
         </div>
 
         <!-- 文章表格区域 -->
+        <el-table :data="artList" style="width: 100%;" border stripe>
+            <el-table-column label="文章标题" prop="title">
+                <template v-slot="scope">
+                    <el-link type="primary" @click="showDetailFn(scope
+                    .row.id)">{{scope.row.title}}</el-link>
+                </template>
+            </el-table-column>
+            <el-table-column label="分类" prop="cate_name"></el-table-column>
+            <el-table-column label="发表时间" prop="pub_date">
+                <template v-slot="scope">
+                    <span>{{ $formatDate(scope.row.pub_date) }}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="状态" prop="state"></el-table-column>
+            <el-table-column label="操作">
+                <template v-slot="{ row }">
+                    <el-button type="danger" size="mini" @click="removeFn(row.id)">删除</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
 
+            <!-- 分页区域 -->
+            <el-pagination
+            @size-change="handleSizeChangeFn"
+            @current-change="handleCurrentChangeFn"
+            :current-page.sync="q.pagenum"
+            :page-sizes="[2, 3, 5, 10]"
+            :page-size.sync="q.pagesize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="total"
+            >
+            </el-pagination>
         <!-- 分页区域 -->
     </el-card>
 
@@ -64,11 +95,29 @@
             </el-form-item>
         </el-form>
     </el-dialog>
+
+            <!-- 查看文章详情的对话框 -->
+        <el-dialog title="文章预览" :visible.sync="detailVisible" width="80%">
+        <h1 class="title">{{ artDetail.title }}</h1>
+        <div class="info">
+            <span>作者：{{ artDetail.nickname || artDetail.username }}</span>
+            <span>发布时间：{{ $formatDate(artDetail.pub_date) }}</span>
+            <span>所属分类：{{ artDetail.cate_name }}</span>
+            <span>状态：{{ artDetail.state }}</span>
+        </div>
+        <!-- 分割线 -->
+        <el-divider></el-divider>
+        <!-- 文章的封面 -->
+        <img :src="baseURL + artDetail.cover_img" alt="" />
+        <!-- 文章的详情 -->
+        <div v-html="artDetail.content" class="detail-box"></div>
+        </el-dialog>
     </div>
 </template>
 
 <script>
-import { getArtCateListAPI, uploadArticleAPI } from '@/api'
+import { baseURL } from '@/utils/request'
+import { getArtCateListAPI, uploadArticleAPI, getArtListAPI, getArtDetailAPI, delArticleAPI } from '@/api'
 import imgObj from '../../assets/images/cover.jpg'
 export default {
     name: 'ArtList',
@@ -100,17 +149,30 @@ export default {
             content: [{ required: true, message: '请输入内容', trigger: 'blur' }],
             cover_img: [{ required: true, message: '请输入图片', trigger: 'blur' }]
         },
-        cateList: [] // 保存文章分类列表
+        cateList: [], // 保存文章分类列表
+        artList: [], // 保存文章列表
+        total: 0, // 现有文章总数
+        artDetail: {},
+        detailVisible: false,
+        baseURL: baseURL
         }
     },
     created () {
         // 请求分类数据
         this.getCateListFn()
+
+        this.getArticleListFn()
     },
     methods: {
         // 发布文章按钮点击事件
         showPubDialogFn () {
             this.pubDialogVisible = true
+        },
+        // 获取所有文章列表
+        async getArticleListFn () {
+            const { data: res } = await getArtListAPI(this.q)
+            this.artList = res.data
+            this.total = res.total
         },
         // 发布文章对话框关闭前的回调
         async handleClose (done) { // done调用才会关闭对话框
@@ -163,6 +225,7 @@ export default {
                     if (res.code !== 0) return this.$message.error('发布文章失败')
                     this.$message.success('发布成功')
                     this.pubDialogVisible = false
+                    this.getArticleListFn()
                 } else {
                     return false
                 }
@@ -176,6 +239,42 @@ export default {
         dialogCloseFn () {
             this.$refs.pubFormRef.resetFields()
             this.$refs.imgRef.setAttribute('src', imgObj)
+        },
+        // 每页条数改变时触发
+        handleSizeChangeFn (sizes) {
+            this.q.pagesize = sizes
+            this.q.pagenum = 1
+            this.getArticleListFn()
+        },
+        // 页码改变时触发
+        handleCurrentChangeFn (nowPage) {
+            this.q.pagenum = nowPage
+            this.getArticleListFn()
+        },
+        choseFn () {
+            this.q.pagenum = 1
+            this.q.pagesize = 2
+            this.getArticleListFn()
+        },
+        resetFn () {
+            this.q.pagenum = 1
+            this.q.pagesize = 2
+            this.q.cate_id = ''
+            this.q.state = ''
+            this.getArticleListFn()
+        },
+        async showDetailFn (artId) {
+            this.detailVisible = true
+            const res = await getArtDetailAPI(artId)
+            console.log(res)
+            this.artDetail = res.data.data
+        },
+        async removeFn (artId) {
+            const { data: res } = await delArticleAPI(artId)
+            if (res.code !== 0) return this.$message.error('删除失败!')
+            this.$message.success('删除成功!')
+            // 刷新列表数据
+            this.getArticleListFn()
         }
     }
 }

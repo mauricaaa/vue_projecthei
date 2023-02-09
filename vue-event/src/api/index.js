@@ -135,3 +135,34 @@ export const uploadArticleAPI = (fd) => {
         data: fd
     })
 }
+
+export const getArtListAPI = ({ pagenum, pagesize, cate_id, state }) => {
+    return request({
+        url: '/my/article/list',
+        params: {
+            pagenum,
+            pagesize,
+            cate_id,
+            state
+        }
+    })
+}
+
+export const getArtDetailAPI = (id) => {
+    return request({
+        url: '/my/article/info',
+        params: {
+            id
+        }
+    })
+}
+
+export const delArticleAPI = (id) => {
+    return request({
+        url: '/my/article/info',
+        method: 'DELETE',
+        params: {
+            id
+        }
+    })
+}

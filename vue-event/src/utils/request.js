@@ -3,9 +3,10 @@ import store from '@/store'
 import router from '@/router'
 import { Message } from 'element-ui'
 
+export const baseURL = 'http://big-event-vue-api-t.itheima.net' // 接口和静态资源所在服务器地址
 // myAxios请求时地址baseurl+URL，然后请求后台
 const myAxios = axios.create({
-  baseURL: 'http://big-event-vue-api-t.itheima.net'
+  baseURL: baseURL
 })
 
 // 请求拦截器，每次调用request都会触发
